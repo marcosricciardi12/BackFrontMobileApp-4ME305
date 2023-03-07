@@ -1,0 +1,7 @@
+flask
+python-dotenv
+flask-restful
+flask-restplus
+flask_cors
+qrcode
+pillow
