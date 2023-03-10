@@ -4,6 +4,7 @@ from io import BytesIO
 import qrcode
 import random
 import string
+from base64 import encodebytes
 
 #Blueprint para acceder a los métodos de autenticación
 login_blueprint = Blueprint('login', __name__, url_prefix='/login')
@@ -36,8 +37,9 @@ def qr_generate():
     img = qrcode.make(data)
     img.save(buffer)
     buffer.seek(0)
-
-    response = send_file(buffer, mimetype='image/png')
+    send_file(buffer, mimetype='image/png')
+    encoded_img = encodebytes(buffer.getvalue()).decode('ascii')
+    response =  { 'status' : 'Success', 'randomID': data , 'imageBytes': encoded_img}
     return response
 
 

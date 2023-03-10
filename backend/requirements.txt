@@ -5,3 +5,7 @@ flask-restplus
 flask_cors
 qrcode
 pillow
+flask_sqlalchemy
+flask-jwt-extended
+flask-mail
+pymysql
