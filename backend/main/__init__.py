@@ -36,7 +36,7 @@ def create_app():
 	app.register_blueprint(routes.login_blueprint)
 	from main.auth import routes
 	app.register_blueprint(routes.auth)
-	from main.newsale import routes
+	from main.salesmanager import routes
 	app.register_blueprint(routes.newsale_blueprint)
 
 
