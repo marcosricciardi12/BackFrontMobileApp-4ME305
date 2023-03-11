@@ -1,0 +1,35 @@
+<body>
+    <div class="center_scroll">
+        <div class="fijar_navbar">
+            <!-- <app-navbar></app-navbar> -->
+        </div>
+        <div  class="row justify-content-center">
+            <div class="col-sm-2"></div>
+            <div class="col d-flex justify-content-center">
+                <div class="card text-center mt-5" style="min-width: fit-content; width: 20rem;">
+                    <div class="card-header">
+                      Welcome to WebApp
+                    </div>
+                    <div class="card-body">
+                      <h5 *ngIf="!isToken" class="card-title">{{randomID}}</h5>
+                      <p class="card-text"></p>
+                      <div *ngIf="!isToken" class="row">
+                        <div class="text-center">
+                            <img [src]="imagePath" class="rounded">
+                          </div>
+                      </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                      Marcos Ricciardi
+                    </div>
+                  </div>
+            </div>
+            
+              <div class="col-sm-2"></div>
+            </div>
+    </div>
+    
+   
+</body>
+
+
