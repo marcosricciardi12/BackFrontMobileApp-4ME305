@@ -32,12 +32,10 @@ def newsale():
             detailPrice = priceMenu * float(element['cant'])
             totalPrice = totalPrice + detailPrice
             newDetailSale = SaleDetailModel(sale_id = newsale.id, menu_id = element['menu_id'], 
-                                      price_detail = detailPrice, cant = element['cant'])
+                                            price_detail = detailPrice, cant = element['cant'])
             db.session.add(newDetailSale)
             db.session.commit()
-            print(user.user)
-            print("Id menu: " + str(element['menu_id']))
-            print("Cantidad: " + str(element['cant']))
+
         setattr(newsale, "price", totalPrice)
         db.session.add(newsale)
         db.session.commit()
