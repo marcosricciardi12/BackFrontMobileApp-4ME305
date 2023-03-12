@@ -1,6 +1,8 @@
 import 'package:ffapp_mobile/pages/loginpage.dart';
 import 'package:ffapp_mobile/pages/signuppage.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -10,6 +12,45 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final bool flag = true;
+  late String token = "";
+  late bool _istoken = false;
+
+  getJWT() async {
+    await SharedPreferences.getInstance().then((value) {
+      token = value.getString("access_token")!;
+      _isJWT();
+      print("token: $token");
+      Map<String, dynamic> payload = Jwt.parseJwt(token);
+      print(payload);
+    });
+
+    //Return String
+  }
+
+  void _isJWT() {
+    setState(() {
+      _istoken = true;
+    });
+  }
+
+  void _isnotJTW() {
+    setState(() {
+      _istoken = false;
+    });
+  }
+
+  void cleanSP() async {
+    final pref = await SharedPreferences.getInstance();
+    pref.clear();
+  }
+
+  @override
+  // ignore: must_call_super
+  initState() {
+    getJWT();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,6 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ]),
               ],
             ),
+            if (_istoken)
+              Container(
+                alignment: Alignment.topLeft,
+                padding: const EdgeInsets.fromLTRB(0, 10, 92, 10),
+                child: Center(child: Text("HAY TOKEN GUARDADO: $token")),
+              )
           ],
         ));
   }

@@ -1,4 +1,10 @@
+import 'package:ffapp_mobile/pages/myhomepage.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decode/jwt_decode.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +15,86 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
+  late String user;
+  late String password;
+  late bool _sendingData = false;
+  late bool loginuserOK = false;
+  late bool loginuserERROR = false;
+  dynamic loginuser;
+
+  Future<http.Response> loginUser(String user, String password) async {
+    _loginuserOKFalse();
+    _watingResponse();
+    try {
+      final response = await http
+          .post(
+            Uri.parse('http://151.252.176.107:5000/auth/login'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(
+                <String, String>{"user": user, "password": password}),
+          )
+          .timeout(Duration(seconds: 3));
+      _thereisResponse();
+      if (response.statusCode == 200) {
+        _loginuserOKTrue();
+        final Map parsed = json.decode(response.body);
+        final String access_token = parsed["access_token"];
+        saveJWT(access_token);
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('User login!')),
+        // );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const MyHomePage()),
+        );
+      } else {
+        _loginuserERRORTrue();
+      }
+
+      return response;
+    } on TimeoutException catch (e) {
+      print('Timeout');
+      return http.Response("Bad Gateway", 504);
+    }
+  }
+
+  void _watingResponse() {
+    setState(() {
+      _sendingData = true;
+    });
+  }
+
+  void _thereisResponse() {
+    setState(() {
+      _sendingData = false;
+    });
+  }
+
+  void _loginuserOKTrue() {
+    setState(() {
+      loginuserOK = true;
+      loginuserERROR = false;
+    });
+  }
+
+  void _loginuserOKFalse() {
+    setState(() {
+      loginuserOK = false;
+    });
+  }
+
+  void _loginuserERRORTrue() {
+    setState(() {
+      loginuserERROR = true;
+    });
+  }
+
+  saveJWT(String access_token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("access_token", access_token);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       // The validator receives the text that the user has entered.
                       validator: (value) {
+                        user = value!;
                         if (value == null || value.isEmpty) {
                           return 'Please enter your user';
                         }
@@ -75,6 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         // The validator receives the text that the user has entered.
                         validator: (value) {
+                          password = value!;
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
                           }
@@ -82,29 +170,50 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       )),
                   Column(children: <Widget>[
-                    Container(
+                    if (!_sendingData)
+                      Container(
+                          alignment: Alignment.center,
+                          child: FloatingActionButton(
+                            child: Icon(Icons.send_rounded),
+                            backgroundColor: Color.fromARGB(255, 207, 124, 68),
+                            foregroundColor: Colors.white,
+                            onPressed: () {
+                              // Validate returns true if the form is valid, or false otherwise.
+                              if (_formKey.currentState!.validate()) {
+                                // If the form is valid, display a snackbar. In the real world,
+                                // you'd often call a server or save the information in a database.
+                                loginUser(user, password);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Processing Data')),
+                                );
+                              }
+                            },
+                          )),
+                    if (!_sendingData)
+                      Container(
                         alignment: Alignment.center,
-                        child: FloatingActionButton(
-                          child: Icon(Icons.send_rounded),
-                          backgroundColor: Color.fromARGB(255, 207, 124, 68),
-                          foregroundColor: Colors.white,
-                          onPressed: () {
-                            // Validate returns true if the form is valid, or false otherwise.
-                            if (_formKey.currentState!.validate()) {
-                              // If the form is valid, display a snackbar. In the real world,
-                              // you'd often call a server or save the information in a database.
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Processing Data')),
-                              );
-                            }
-                          },
-                        )),
-                    Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(10),
-                      child: Center(child: Text("Login!")),
-                    )
+                        padding: const EdgeInsets.all(10),
+                        child: Center(child: Text("Sign Up!")),
+                      )
+                    else
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    if (loginuserERROR)
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        child: Center(child: Text("User couldn't login :(")),
+                      ),
+                    if (loginuserOK)
+                      Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.all(10),
+                        child: Center(child: Text("USER LOGIN SUCCESFUL!")),
+                      )
                   ]),
                 ],
               ),
