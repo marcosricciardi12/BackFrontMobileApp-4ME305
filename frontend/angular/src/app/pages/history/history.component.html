@@ -1,0 +1,116 @@
+<body>
+    <div class="center_scroll">
+        <div class="fijar_navbar">
+            <app-navbar></app-navbar>
+        </div>
+        <div class="container-fluid">
+            <h3 class="text-dark mb-4" id="heading"><span style="color: rgb(255, 255, 255);">Admin users panel</span></h3>
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <p class="text-primary m-0 fw-bold"></p>
+                    Purchases history
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 align-self-center">
+                        
+                        </div>
+                        <div class="col-md-6 mt-3"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 text-nowrap">
+                            <div id="dataTable_length" class="dataTables_length" aria-controls="dataTable"></div>
+                        </div>
+                        <div class="col-md-6">
+                           
+                        </div>
+                    </div>
+                    <div class = "recuadro_users">
+                        <div class="table-responsive table mt-1" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                            <table class="table my-0" id="dataTable">
+                                <thead>
+                                    <tr>
+                                        <th>Sale ID</th>
+                                        <th>Date</th>
+                                        <th>Total Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    
+                                    <tr *ngFor="let pur of arrayPurchases">
+    
+                                        <td>{{pur.id}}</td>
+                                        <td>{{pur.sale_date}}</td>
+                                        <td>{{pur.total_price}}</td>
+                                        <td><button class="btn btn-primary" style="background-color: rgb(255, 136, 0);"  type="button" data-bs-toggle="modal" data-bs-target="#details" data-bs-whatever="@getbootstrap" (click) = "getitemDetails(pur.details , pur.id)">
+                                            <i class="fa-sharp fa-solid fa-eye" ></i>View details
+                                        </button>
+
+                                            <div class="modal fade" id="details" tabindex="-1" aria-labelledby="detailsLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                  <div class="modal-content">
+                                                    <div class="modal-header">
+                                                      <h1 class="modal-title fs-5" id="exampleModalLabel">Purchase ID #{{saleID}}</h1>
+                                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="table-responsive table mt-1" id="dataTable" role="grid" aria-describedby="dataTable_info">
+                                                            <table class="table my-0" id="dataTable">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Menu</th>
+                                                                        <th>Quantity</th>
+                                                                        <th>Detail Price</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    
+                                                                    <tr *ngFor="let detail of arrayDetails">
+                                    
+                                                                        <td>{{detail.menu}}</td>
+                                                                        <td>{{detail.cant}}</td>
+                                                                        <td>{{detail.price_detail}}</td>
+                                                                    </tr>
+                                                                    
+                                                                </tbody>
+                                                                <tfoot>
+                                                                    <tr></tr>
+                                                                </tfoot>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                                <tfoot>
+                                    <tr></tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 align-self-center">
+                            <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite"></p>
+                        </div>
+                        <div class="col-md-6">
+                           
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                
+            </div>
+            
+        </div>
+    </div>
+</body>

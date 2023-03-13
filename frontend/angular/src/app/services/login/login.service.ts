@@ -7,6 +7,7 @@ import  { environment } from './../../../environments/environment';
 })
 export class LoginService {
   url = 'login/qrcode'
+  url2 = 'login/'
 
   constructor(
     private httpClient: HttpClient
@@ -14,6 +15,10 @@ export class LoginService {
 
   getQrcode() {
     return  this.httpClient.get((environment.url)+this.url);
+  }
+
+  gettoken(randomID:any) {
+    return  this.httpClient.get((environment.url)+this.url2+randomID);
   }
 
 }

@@ -4,6 +4,8 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { LoginService } from 'src/app/services/login/login.service';
 import { DomSanitizer } from '@angular/platform-browser';
+import { interval, mergeMap } from 'rxjs';
+import { json } from 'stream/consumers';
 
 @Component({
   selector: 'app-home',
@@ -16,6 +18,7 @@ export class HomeComponent implements OnInit {
   randomID:any;
   encoded_img:any;
   imagePath:any;
+  jsontoken:any;
 
   constructor(
     private loginService: LoginService,
@@ -32,6 +35,21 @@ export class HomeComponent implements OnInit {
       }
     }
     this.get_qrcode()
+    interval(1 * 1000)
+    .pipe(
+        mergeMap(() => this.loginService.gettoken(this.randomID))
+    )
+    .subscribe(data => {
+      this.jsontoken = data;
+      if (this.jsontoken.tokenID != null) {
+        console.log("EL TOKEN ES: " + this.jsontoken.tokenID.toString())
+        localStorage.setItem('token',this.jsontoken.tokenID.toString());
+        this.router.navigate(['history']);
+      }
+      
+      
+
+    })
   }
 
   get isToken() {
