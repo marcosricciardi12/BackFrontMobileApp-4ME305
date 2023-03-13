@@ -6,6 +6,7 @@ class Menu(db.Model):
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
+    imageURL = db.Column(db.String(1024), nullable=False)
     # title = db.Column(db.String(100), nullable=False)
     sale_detail = db.relationship('SaleDetail', back_populates = "menu") # Un menu corresponde a muchos detalles de venta
 
@@ -14,36 +15,39 @@ class Menu(db.Model):
         return '<Menu: %r %r >' % (self.title, self.content, self.user_id)
 
     def to_json(self):
-        poem_json = {
+        menu_json = {
             'id': self.id,
             'name': str(self.name),
             'description': str(self.description),
-            'price': self.price
+            'price': self.price,
+            'imageURL': self.imageURL,
         }
-        return poem_json
+        return menu_json
     
     def to_json_short(self):
-        poem_json = {
+        menu_json = {
             'name': str(self.name),
             'description': str(self.description),
             'price': self.price
         }
-        return poem_json
+        return menu_json
 
     def to_json_onlyname(self):
-        poem_json = {
+        menu_json = {
             'name': str(self.name),
         }
-        return poem_json
+        return menu_json
 
     @staticmethod
-    def from_json(poem_json):
-        id = poem_json.get('id')
-        name = poem_json.get('name')
-        description = poem_json.get('description')
-        price = poem_json.get('price')
+    def from_json(menu_json):
+        id = menu_json.get('id')
+        name = menu_json.get('name')
+        description = menu_json.get('description')
+        price = menu_json.get('price')
+        imageURL = menu_json.get('imageURL')
         return Menu(id=id,
                 name=name,
                 description=description,
-                price = price
+                price = price,
+                imageURL = imageURL
                 )

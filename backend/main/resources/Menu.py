@@ -23,7 +23,7 @@ class Menus(Resource):
         menus = db.session.query(MenuModel)
 
         menus = menus.paginate(page = page, per_page = per_page, error_out=True, max_per_page=20) #Ahora no es una lista de lementos, es una paginacion
-        return jsonify({"menus":[user.to_json() for user in menus.items],
+        return jsonify({"menus":[menu.to_json() for menu in menus.items],
                         'total': menus.total, 
                         'pages': menus.pages, 
                         'page': page})
