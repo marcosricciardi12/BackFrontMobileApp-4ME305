@@ -33,6 +33,10 @@ export class HomeComponent implements OnInit {
       if (this.tokenExpired(token)) {
         localStorage.removeItem('token');
       }
+      else {
+        this.router.navigate(['history']);
+      }
+    
     }
     this.get_qrcode()
     interval(1 * 1000)
@@ -42,9 +46,12 @@ export class HomeComponent implements OnInit {
     .subscribe(data => {
       this.jsontoken = data;
       if (this.jsontoken.tokenID != null) {
-        console.log("EL TOKEN ES: " + this.jsontoken.tokenID.toString())
-        localStorage.setItem('token',this.jsontoken.tokenID.toString());
-        this.router.navigate(['history']);
+        if (this.jsontoken.tokenID != "") {
+          console.log("EL TOKEN ES: " + this.jsontoken.tokenID.toString())
+          localStorage.setItem('token',this.jsontoken.tokenID.toString());
+          this.router.navigate(['history']);
+        }
+        
       }
       
       

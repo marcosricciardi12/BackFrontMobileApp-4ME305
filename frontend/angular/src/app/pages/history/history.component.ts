@@ -26,7 +26,6 @@ export class HistoryComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    await delay(2000);
     this.getPurchases()
   }
 
