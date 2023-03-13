@@ -1,5 +1,6 @@
 import 'package:ffapp_mobile/pages/init.dart';
 import 'package:ffapp_mobile/pages/loginpage.dart';
+import 'package:ffapp_mobile/pages/menupage.dart';
 import 'package:ffapp_mobile/pages/qrscanner.dart';
 import 'package:ffapp_mobile/pages/signuppage.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +81,10 @@ class _UserInPageState extends State<UserInPage> {
               tooltip: 'Logout!',
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('User logged out! Bye $user')),
+                  SnackBar(
+                    content: Text('User logged out! Bye $user'),
+                    backgroundColor: Color.fromARGB(183, 255, 115, 0),
+                  ),
                 );
                 Navigator.push(
                   context,
@@ -109,7 +113,7 @@ class _UserInPageState extends State<UserInPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LoginPage()),
+                            builder: (context) => const MenuPage()),
                       );
                     },
                   )),

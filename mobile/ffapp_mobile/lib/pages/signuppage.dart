@@ -47,7 +47,9 @@ class _SignupPageState extends State<SignupPage> {
       if (response.statusCode == 201) {
         _createuserOKTrue();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('User Created!')),
+          const SnackBar(
+              content: Text('User Created!'),
+              backgroundColor: Color.fromARGB(183, 255, 115, 0)),
         );
         Navigator.push(
           context,

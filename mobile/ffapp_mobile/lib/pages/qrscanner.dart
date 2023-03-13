@@ -19,15 +19,22 @@ class QrScannePage extends StatefulWidget {
 }
 
 class _QrScannePageState extends State<QrScannePage> {
-  MobileScannerController cameraController = MobileScannerController();
+  MobileScannerController cameraController = MobileScannerController(
+    facing: CameraFacing.back,
+    torchEnabled: false,
+  );
   bool _screenOpened = false;
   late String token = "";
   late bool _sendingData = false;
 
-  bool getJWT() {
+  void loginUser(String? randomID, MobileScannerController camcontroller) {
     late bool status = false;
     SharedPreferences.getInstance().then((value) {
       token = value.getString("access_token")!;
+      while (token == "" || token != value.getString("access_token")!) {
+        token = value.getString("access_token")!;
+      }
+      print("el token a enviar es: " + token);
       if (token.isNotEmpty) {
         print("HAY TOKEN");
         status = true;
@@ -35,19 +42,11 @@ class _QrScannePageState extends State<QrScannePage> {
         print("No hay token");
         status = false;
       }
+      postData(randomID, camcontroller);
     });
-    return status;
-    //Return String
   }
 
-  void loginUser(
-    String? randomID,
-  ) {
-    getJWT();
-    postData(randomID);
-  }
-
-  void postData(String? randomID) async {
+  void postData(String? randomID, MobileScannerController camcontroller) async {
     try {
       print("SALE MANDAR DATA QR");
       _watingResponse();
@@ -60,7 +59,13 @@ class _QrScannePageState extends State<QrScannePage> {
             body: jsonEncode(<String, String>{"access_token": token}),
           )
           .timeout(Duration(seconds: 3));
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 && token != "") {
+        print(token);
+        camcontroller.stop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('QR Scanned, redirecting in the WebSite!')),
+        );
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const UserInPage()),
@@ -84,29 +89,61 @@ class _QrScannePageState extends State<QrScannePage> {
     });
   }
 
+  void _setZoom() {
+    setState(() {
+      cameraController.setZoomScale(0.5);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _setZoom();
     return Scaffold(
-      appBar: AppBar(title: const Text('Mobile Scanner')),
-      body: MobileScanner(
-        // fit: BoxFit.contain,
-        controller: MobileScannerController(
-          facing: CameraFacing.back,
-          torchEnabled: false,
+        appBar: AppBar(
+          title: const Text('Website History'),
+          backgroundColor: Color.fromARGB(255, 206, 108, 43),
+          centerTitle: true,
         ),
-        onDetect: (capture) async {
-          if (!_sendingData) {
-            final List<Barcode> barcodes = capture.barcodes;
-            final Uint8List? image = capture.image;
-            for (final barcode in barcodes) {
-              print(_sendingData);
-
-              debugPrint('Barcode found! ${barcode.rawValue}');
-              loginUser(barcode.rawValue);
-            }
-          }
-        },
-      ),
-    );
+        body: Stack(children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 50, 50, 250),
+            child: MobileScanner(
+              fit: BoxFit.cover,
+              controller: cameraController,
+              onStart: (init) {
+                _setZoom();
+              },
+              onDetect: (capture) async {
+                if (!_sendingData) {
+                  final List<Barcode> barcodes = capture.barcodes;
+                  final Uint8List? image = capture.image;
+                  for (final barcode in barcodes) {
+                    print(_sendingData);
+                    debugPrint('Barcode found! ${barcode.rawValue}');
+                    loginUser(barcode.rawValue, cameraController);
+                  }
+                }
+              },
+            ),
+          ),
+          Container(
+            alignment: Alignment.topCenter,
+            padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+            child:
+                Text("Scan QR code in the website!", textAlign: TextAlign.end),
+          ),
+          if (_sendingData)
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.all(100),
+              child: CircularProgressIndicator(),
+            ),
+          if (_sendingData)
+            Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.all(80),
+              child: Text("Wating..."),
+            )
+        ]));
   }
 }

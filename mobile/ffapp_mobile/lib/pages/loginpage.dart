@@ -43,9 +43,12 @@ class _LoginPageState extends State<LoginPage> {
         final Map parsed = json.decode(response.body);
         final String access_token = parsed["access_token"];
         saveJWT(access_token);
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   const SnackBar(content: Text('User login!')),
-        // );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User login!'),
+            backgroundColor: Color.fromARGB(183, 255, 115, 0),
+          ),
+        );
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => const UserInPage()),
@@ -186,7 +189,9 @@ class _LoginPageState extends State<LoginPage> {
                                 loginUser(user, password);
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text('Processing Data')),
+                                    content: Text('Processing Data'),
+                                    duration: Duration(milliseconds: 1500),
+                                  ),
                                 );
                               }
                             },
