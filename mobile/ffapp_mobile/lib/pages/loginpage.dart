@@ -1,4 +1,5 @@
 import 'package:ffapp_mobile/pages/myhomepage.dart';
+import 'package:ffapp_mobile/pages/userinpage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
@@ -47,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
         // );
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const MyHomePage()),
+          MaterialPageRoute(builder: (context) => const UserInPage()),
         );
       } else {
         _loginuserERRORTrue();

@@ -14,30 +14,19 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final bool flag = true;
   late String token = "";
-  late bool _istoken = false;
 
-  getJWT() async {
-    await SharedPreferences.getInstance().then((value) {
-      token = value.getString("access_token")!;
-      _isJWT();
-      print("token: $token");
-      Map<String, dynamic> payload = Jwt.parseJwt(token);
-      print(payload);
+  bool getJWT() {
+    late bool status = false;
+    SharedPreferences.getInstance().then((value) {
+      if (value.getString("access_token") != null) {
+        status = true;
+      } else {
+        status = false;
+      }
     });
-
+    print(status);
+    return status;
     //Return String
-  }
-
-  void _isJWT() {
-    setState(() {
-      _istoken = true;
-    });
-  }
-
-  void _isnotJTW() {
-    setState(() {
-      _istoken = false;
-    });
   }
 
   void cleanSP() async {
@@ -122,12 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 ]),
               ],
             ),
-            if (_istoken)
-              Container(
-                alignment: Alignment.topLeft,
-                padding: const EdgeInsets.fromLTRB(0, 10, 92, 10),
-                child: Center(child: Text("HAY TOKEN GUARDADO: $token")),
-              )
           ],
         ));
   }
