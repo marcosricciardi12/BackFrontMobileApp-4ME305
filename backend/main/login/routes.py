@@ -12,11 +12,12 @@ login_blueprint = Blueprint('login', __name__, url_prefix='/login')
 #Método de logueo
 @login_blueprint.route('/<randomID>', methods=['GET', 'POST'])
 def login(randomID):
+    print(request.access_route)
     if request.method == 'POST':
         filePATH = "/tmp/" + randomID + ".txt"
         with open (filePATH, "w") as tokenfile:
             data = request.get_json()
-            tokenfile.write(str(data['token']))
+            tokenfile.write(str(data['access_token']))
         return (data)
     if request.method == 'GET':
         filePATH = "/tmp/" + randomID + ".txt"
