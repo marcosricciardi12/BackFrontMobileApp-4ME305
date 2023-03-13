@@ -17,6 +17,7 @@ export class HistoryComponent implements OnInit {
   arrayPurchases:any;
   cant:any
   menu:any
+  total_price:any;
   price_detail:any
   arrayDetails:any;
   saleID:any;
@@ -26,7 +27,18 @@ export class HistoryComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
+    let token = localStorage.getItem("token") || "";
+    if(token) {
+      if (this.tokenExpired(token)) {
+        localStorage.removeItem('token');
+        this.router.navigate(['/home']);
+      }
+    }
+    else {
+      this.router.navigate(['/home']);
+    }
     this.getPurchases()
+    
   }
 
 
@@ -38,9 +50,16 @@ export class HistoryComponent implements OnInit {
     })
   }
 
-  getitemDetails(detail:any, purchaseID:any) {
+  getitemDetails(detail:any, purchaseID:any, totalprice:any) {
     this.saleID = purchaseID
     this.arrayDetails = detail
+    this.total_price = totalprice
 
   }
+
+  tokenExpired(token: string) {
+    const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
+    return (Math.floor((new Date).getTime() / 1000)) >= expiry;
+  }
+
 }

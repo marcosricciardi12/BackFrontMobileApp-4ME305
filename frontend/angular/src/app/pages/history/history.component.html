@@ -40,10 +40,10 @@
                                     
                                     <tr *ngFor="let pur of arrayPurchases">
     
-                                        <td>{{pur.id}}</td>
+                                        <td>#{{pur.id}}</td>
                                         <td>{{pur.sale_date}}</td>
-                                        <td>{{pur.total_price}}</td>
-                                        <td><button class="btn btn-primary" style="background-color: rgb(255, 136, 0);"  type="button" data-bs-toggle="modal" data-bs-target="#details" data-bs-whatever="@getbootstrap" (click) = "getitemDetails(pur.details , pur.id)">
+                                        <td>${{pur.total_price}}</td>
+                                        <td><button class="btn btn-primary" style="background-color: rgb(255, 136, 0);"  type="button" data-bs-toggle="modal" data-bs-target="#details" data-bs-whatever="@getbootstrap" (click) = "getitemDetails(pur.details , pur.id, pur.total_price)">
                                             <i class="fa-sharp fa-solid fa-eye" ></i>View details
                                         </button>
 
@@ -70,7 +70,19 @@
                                     
                                                                         <td>{{detail.menu}}</td>
                                                                         <td>{{detail.cant}}</td>
-                                                                        <td>{{detail.price_detail}}</td>
+                                                                        <td>${{detail.price_detail}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                    
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    <tr>
+                                    
+                                                                        <td></td>
+                                                                        <td>Total Price:</td>
+                                                                        <td>${{total_price}}</td>
                                                                     </tr>
                                                                     
                                                                 </tbody>
