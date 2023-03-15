@@ -6,6 +6,7 @@ import 'package:ffapp_mobile/pages/signuppage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UserInPage extends StatefulWidget {
   const UserInPage({super.key});

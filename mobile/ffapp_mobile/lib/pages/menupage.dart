@@ -6,6 +6,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:ffapp_mobile/models/menu.dart';
 import 'package:http/http.dart' as http;
 import 'package:ffapp_mobile/models/menus.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -18,8 +19,7 @@ class _MenuPageState extends State<MenuPage> {
   late List<dynamic> listmenus;
 
   Future<Menus> fetchMenus() async {
-    final response =
-        await http.get(Uri.parse('http://151.252.176.107:5000/menus'));
+    final response = await http.get(Uri.parse('${dotenv.env['URLAPI']}/menus'));
 
     if (response.statusCode == 200) {
       // If the server did return a 200 OK response,

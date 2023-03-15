@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class QrScannePage extends StatefulWidget {
   const QrScannePage({Key? key}) : super(key: key);
@@ -34,7 +35,7 @@ class _QrScannePageState extends State<QrScannePage> {
       while (token == "" || token != value.getString("access_token")!) {
         token = value.getString("access_token")!;
       }
-      print("el token a enviar es: " + token);
+      // print("el token a enviar es: " + token);
       if (token.isNotEmpty) {
         print("HAY TOKEN");
         status = true;
@@ -48,11 +49,10 @@ class _QrScannePageState extends State<QrScannePage> {
 
   void postData(String? randomID, MobileScannerController camcontroller) async {
     try {
-      print("SALE MANDAR DATA QR");
       _watingResponse();
       final response = await http
           .post(
-            Uri.parse('http://151.252.176.107:5000/login/$randomID'),
+            Uri.parse('${dotenv.env['URLAPI']}/login/$randomID'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },

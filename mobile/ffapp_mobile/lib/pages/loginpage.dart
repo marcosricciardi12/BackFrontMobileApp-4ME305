@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decode/jwt_decode.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final response = await http
           .post(
-            Uri.parse('http://151.252.176.107:5000/auth/login'),
+            Uri.parse('${dotenv.env['URLAPI']}/auth/login'),
             headers: <String, String>{
               'Content-Type': 'application/json; charset=UTF-8',
             },
