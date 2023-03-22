@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ffapp_mobile/pages/userinpage.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +18,11 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   late List<dynamic> listmenus;
+  late List<int> cantmenu = [];
+  late String token = "";
+  late Map order = {};
+  late int cantorder = 0;
+  late double totalprice = 0.0;
 
   Future<Menus> fetchMenus() async {
     final response = await http.get(Uri.parse('${dotenv.env['URLAPI']}/menus'));
@@ -36,8 +42,51 @@ class _MenuPageState extends State<MenuPage> {
     fetchMenus().then((value) => {
           setState(() {
             listmenus = value.menus;
+            for (int i = 0; i < listmenus.length; i++) {
+              cantmenu.add(0);
+              print(cantmenu[i]);
+            }
           }),
         });
+  }
+
+  Future<http.Response> neworder(List finalorder) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('${dotenv.env['URLAPI']}/salesmanager/newsale'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+              "Authorization": "Bearer $token",
+            },
+            body: jsonEncode(finalorder),
+          )
+          .timeout(Duration(seconds: 3));
+      if (response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Order in process!'),
+              backgroundColor: Color.fromARGB(183, 255, 115, 0)),
+        );
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const UserInPage()),
+        );
+      }
+      return response;
+    } on TimeoutException catch (e) {
+      print('Timeout');
+      return http.Response("Bad Gateway", 504);
+    }
+  }
+
+  gettoken() {
+    SharedPreferences.getInstance().then((value) {
+      token = value.getString("access_token")!;
+      while (token == "" || token != value.getString("access_token")!) {
+        token = value.getString("access_token")!;
+      }
+    });
   }
 
   @override
@@ -45,6 +94,7 @@ class _MenuPageState extends State<MenuPage> {
     super.initState();
     listmenus = [];
     getMenus();
+    gettoken();
   }
 
   @override
@@ -85,6 +135,29 @@ class _MenuPageState extends State<MenuPage> {
         backgroundColor: Color.fromARGB(255, 206, 108, 43),
         centerTitle: true,
         title: const Text('Product List'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                late List<dynamic> finalorder = [];
+                for (int i = 0; i < listmenus.length; i++) {
+                  if (cantmenu[i] != 0) {
+                    late Map order = {
+                      "menu_id": listmenus[i]['id'],
+                      "cant": cantmenu[i],
+                    };
+                    finalorder.add(order);
+                  }
+                }
+                print(finalorder);
+                neworder(finalorder);
+              },
+              icon: Icon(Icons.shopping_cart)),
+          Container(
+            alignment: Alignment.center,
+            padding: EdgeInsets.fromLTRB(2, 0, 20, 0),
+            child: Text("Cant: $cantorder \ntotal: $totalprice"),
+          ),
+        ],
       ),
       body: ListView.builder(
           padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 8.0),
@@ -162,13 +235,39 @@ class _MenuPageState extends State<MenuPage> {
                         ],
                       ),
                     ),
-                    ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(166, 255, 115, 0)),
-                        onPressed: () {
-                          // saveData(index);
-                        },
-                        child: const Text('Add to Cart')),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  if (cantmenu[index] > 0) {
+                                    setState(() {
+                                      cantmenu[index] = cantmenu[index] - 1;
+                                      cantorder = cantorder - 1;
+                                      totalprice = totalprice -
+                                          listmenus[index]['price'];
+                                    });
+                                  }
+                                },
+                                icon: Icon(Icons.remove_circle)),
+                            Center(child: Text("${cantmenu[index]}")),
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    cantmenu[index] = cantmenu[index] + 1;
+                                    cantorder = cantorder + 1;
+                                    totalprice =
+                                        totalprice + listmenus[index]['price'];
+                                  });
+
+                                  print(cantmenu[index]);
+                                },
+                                icon: Icon(Icons.add_circle))
+                          ],
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
