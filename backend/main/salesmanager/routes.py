@@ -19,9 +19,12 @@ newsale_blueprint = Blueprint('newsale', __name__, url_prefix='/salesmanager')
 @jwt_required()
 def newsale():
     if request.method == 'POST':
+        
         buyer_user_id = get_jwt_identity()
         user = db.session.query(UserModel).get_or_404(buyer_user_id)
         data = request.get_json()
+        print("printJSON")
+        print(data)
         newsale = SaleModel(user_id = buyer_user_id)
         db.session.add(newsale)
         db.session.commit()

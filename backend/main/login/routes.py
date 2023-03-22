@@ -16,17 +16,17 @@ def login(randomID):
         filePATH = "/tmp/" + randomID + ".txt"
         with open (filePATH, "w") as tokenfile:
             data = request.get_json()
-            print("informacion recibida en el post: " + str(data))
+            # print("informacion recibida en el post: " + str(data))
             tokenfile.write(str(data['access_token']))
         return (data)
     if request.method == 'GET':
         filePATH = "/tmp/" + randomID + ".txt"
         if os.path.isfile(filePATH):
-            print('El archivo existe.')
+            # print('El archivo existe.')
             with open (filePATH, "r") as tokenfile:
                 data = tokenfile.read()
             os.remove(filePATH)
-            print("Informacion del archivo leido despues del get: " + str(data))
+            # print("Informacion del archivo leido despues del get: " + str(data))
             return ({"tokenID": data})
         else:
             return ({"tokenID": None})
