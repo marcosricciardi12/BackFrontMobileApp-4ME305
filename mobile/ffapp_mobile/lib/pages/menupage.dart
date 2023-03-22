@@ -8,6 +8,7 @@ import 'package:ffapp_mobile/models/menu.dart';
 import 'package:http/http.dart' as http;
 import 'package:ffapp_mobile/models/menus.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:local_auth/local_auth.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -23,6 +24,15 @@ class _MenuPageState extends State<MenuPage> {
   late Map order = {};
   late int cantorder = 0;
   late double totalprice = 0.0;
+  final LocalAuthentication auth = LocalAuthentication();
+
+  Future<bool> auth_user() async {
+    final bool didAuthenticate = await auth.authenticate(
+        localizedReason:
+            'Please authenticate to confirm your order and pay $totalprice',
+        options: const AuthenticationOptions(biometricOnly: true));
+    return didAuthenticate;
+  }
 
   Future<Menus> fetchMenus() async {
     final response = await http.get(Uri.parse('${dotenv.env['URLAPI']}/menus'));
@@ -62,7 +72,7 @@ class _MenuPageState extends State<MenuPage> {
             body: jsonEncode(finalorder),
           )
           .timeout(Duration(seconds: 3));
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text('Order in process!'),
@@ -138,18 +148,24 @@ class _MenuPageState extends State<MenuPage> {
         actions: <Widget>[
           IconButton(
               onPressed: () {
-                late List<dynamic> finalorder = [];
-                for (int i = 0; i < listmenus.length; i++) {
-                  if (cantmenu[i] != 0) {
-                    late Map order = {
-                      "menu_id": listmenus[i]['id'],
-                      "cant": cantmenu[i],
-                    };
-                    finalorder.add(order);
-                  }
+                if (cantorder > 0) {
+                  auth_user().then((value) {
+                    if (value) {
+                      late List<dynamic> finalorder = [];
+                      for (int i = 0; i < listmenus.length; i++) {
+                        if (cantmenu[i] != 0) {
+                          late Map order = {
+                            "menu_id": listmenus[i]['id'],
+                            "cant": cantmenu[i],
+                          };
+                          finalorder.add(order);
+                        }
+                      }
+                      print(finalorder);
+                      neworder(finalorder);
+                    }
+                  });
                 }
-                print(finalorder);
-                neworder(finalorder);
               },
               icon: Icon(Icons.shopping_cart)),
           Container(
